@@ -18,7 +18,7 @@ module MongoMapper
 
       module InstanceMethods
         # Destroys the instance
-        # @see ActiveModel::Callbacks
+        # @see update_attribute
         def destroy
           run_callbacks(:destroy) do
             update_attribute(:deleted_at, Time.now)
@@ -31,6 +31,16 @@ module MongoMapper
           self.deleted_at.present?
         end
         alias :deleted? :destroyed?
+
+        # Sets the deleted_at attribute to nil, if present
+        # @see update_attribute
+        def ensure_active
+          run_callbacks(:destroy) do
+            update_attribute(:deleted_at, nil)
+          end
+        end
+        alias :undestroy  :ensure_active
+        alias :undelete   :ensure_active
       end
 
     end

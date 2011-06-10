@@ -24,10 +24,51 @@ describe MongoMapper::Plugins::Paranoia do
       end
     end
 
+    describe '#ensure_active, #undestroy, #undelete' do
+      it 'should be included via the plugin interface' do
+        @paranoid.should respond_to(:ensure_active)
+        @paranoid.should respond_to(:undestroy)
+        @paranoid.should respond_to(:undelete)
+      end
+    end
+
     describe '#destroyed?, #deleted?' do
       it 'should be included via the plugin interface' do
         @paranoid.should respond_to(:destroyed?)
         @paranoid.should respond_to(:deleted?)
+      end
+    end
+  end
+
+  context 'When un-destroying instances' do
+    before(:each) do
+      @paranoid = ParanoidByInclude.create!
+    end
+
+    context 'Instance Methods' do
+      describe '#ensure_active' do
+        it 'should remove the deleted_at timestamp, if set' do
+          @paranoid.destroyed?.should be_false
+          @paranoid.destroy
+          @paranoid.destroyed?.should be_true
+
+          @paranoid.ensure_active
+          @paranoid.destroyed?.should be_false
+        end
+      end
+    end
+
+    context 'Persistence' do
+      it 'should no longer be destroyed, when queried from the server' do
+        pid = @paranoid.id
+        @paranoid.destroy
+        persistanoid = ParanoidByInclude.find(pid)
+        persistanoid.destroyed?.should be_true
+
+        @paranoid.ensure_active
+        persistanoid = ParanoidByInclude.find(pid)
+        persistanoid.destroyed?.should be_false
+        persistanoid.deleted_at.should_not be_present
       end
     end
   end

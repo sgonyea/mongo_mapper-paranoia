@@ -20,4 +20,4 @@ To force strict keys for all models, from the outset:
           acts_as_paranoid
         end
 
-If you already required the force\_plugin, then you don't need to specify 'acts_as_paranoid'
+If you already required the force\_plugin, then you don't need to specify 'acts\_as\_paranoid'

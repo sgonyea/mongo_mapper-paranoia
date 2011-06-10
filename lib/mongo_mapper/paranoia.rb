@@ -32,7 +32,7 @@ module MongoMapper
         end
         alias :deleted? :destroyed?
 
-        # Sets the deleted_at attribute to nil, if present
+        # Sets the deleted_at attribute to nil
         # @see update_attribute
         def ensure_active
           run_callbacks(:destroy) do
